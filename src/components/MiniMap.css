@@ -1,0 +1,30 @@
+.mini-map {
+  width: 100%;
+  height: 170px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.mini-map--overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.mini-map--placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #f0f4f0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.mini-map-error-icon { font-size: 28px; }
+.mini-map-error-text { font-size: 13px; color: var(--text-muted); }
+.mini-map-retry {
+  margin-top: 4px;
+  padding: 6px 14px;
+  font-size: 12px;
+}

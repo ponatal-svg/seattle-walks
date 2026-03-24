@@ -1,0 +1,13 @@
+{
+  "name": "Seattle Walks",
+  "short_name": "SeaWalks",
+  "description": "Guided audio walking tours of Seattle with history & nature",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf7f2",
+  "theme_color": "#1c1f2e",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
