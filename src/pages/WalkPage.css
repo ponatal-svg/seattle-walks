@@ -25,6 +25,20 @@
   letter-spacing: -0.3px; line-height: 1.2;
 }
 .walk-meta { color: rgba(255,255,255,0.6); font-size: 12px; margin-top: 3px; }
+
+/* ── Reversed route badge ─────────────────────────────── */
+.walk-reversed-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(255, 200, 0, 0.18); border: 1px solid rgba(255,200,0,0.45);
+  color: #ffe066; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.4px; padding: 3px 9px; border-radius: 20px;
+  margin-top: 5px;
+}
+
+/* ── Split route buttons ──────────────────────────────── */
+.walk-route-split {
+  display: flex; gap: 5px;
+}
 .walk-progress-label {
   display: flex; justify-content: space-between;
   font-size: 11px; color: rgba(255,255,255,0.55);

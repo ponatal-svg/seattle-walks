@@ -22,6 +22,8 @@ export interface WalkMeta {
   startPoint: string;
   endPoint: string;
   totalStops: number;
+  /** True when the walk runs opposite to the book's original order */
+  reversed?: boolean;
 }
 
 export interface Walk extends WalkMeta {

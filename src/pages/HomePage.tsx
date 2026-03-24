@@ -66,6 +66,7 @@ function WalkCard({ walk, color, onClick }: { walk: WalkMeta; color: string; onC
         <div className="walk-card-chips">
           <span className="chip chip-blue">{walk.distance}</span>
           <span className={difficultyChip[walk.difficulty]}>{difficultyLabel[walk.difficulty]}</span>
+          {walk.reversed && <span className="chip chip-amber">⭐ Reversed</span>}
         </div>
       </div>
       <div className="walk-card-right">

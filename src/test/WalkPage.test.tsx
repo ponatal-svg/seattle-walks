@@ -17,12 +17,19 @@ function renderWalkPage(walkId = '10') {
 describe('WalkPage', () => {
   it('renders walk title', () => {
     renderWalkPage('10');
-    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(/Green Lake/i);
+    // Walk 10 is reversed: title is "Union Bay → Green Lake"
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(/Union Bay/i);
+  });
+
+  it('shows reversed route badge', () => {
+    renderWalkPage('10');
+    expect(screen.getByText(/Reversed Route/i)).toBeInTheDocument();
   });
 
   it('renders first stop by default', () => {
     renderWalkPage('10');
-    expect(screen.getByText(/Green Lake Shore/i)).toBeInTheDocument();
+    // Walk is reversed; stop 1 is now the UW bus stop
+    expect(screen.getByText(/Walk Start/i)).toBeInTheDocument();
   });
 
   it('renders stop number badge', () => {
@@ -35,7 +42,7 @@ describe('WalkPage', () => {
     renderWalkPage('10');
     fireEvent.click(screen.getByLabelText(/Next stop/i));
     await waitFor(() => {
-      expect(screen.getByText(/Clock Tower/i)).toBeInTheDocument();
+      expect(screen.getByText(/Loop Trail Viewpoint/i)).toBeInTheDocument();
     });
   });
 
@@ -55,10 +62,10 @@ describe('WalkPage', () => {
   it('navigating back with Prev returns to previous stop', async () => {
     renderWalkPage('10');
     fireEvent.click(screen.getByLabelText(/Next stop/i));
-    await waitFor(() => screen.getByText(/Clock Tower/i));
+    await waitFor(() => screen.getByText(/Loop Trail Viewpoint/i));
     fireEvent.click(screen.getByLabelText(/Previous stop/i));
     await waitFor(() => {
-      expect(screen.getByText(/Green Lake Shore/i)).toBeInTheDocument();
+      expect(screen.getByText(/Walk Start/i)).toBeInTheDocument();
     });
   });
 
@@ -72,13 +79,26 @@ describe('WalkPage', () => {
     expect(screen.getByLabelText(/Navigate to stop 1/i)).toBeInTheDocument();
   });
 
-  it('shows Full Route button', () => {
+  it('shows Full Route button(s)', () => {
     renderWalkPage('10');
+    // Walk 10 has 15 stops → split into 2 route buttons in header + 1 in bottom nav
     expect(screen.getAllByLabelText(/Open full route/i).length).toBeGreaterThanOrEqual(1);
   });
 
-  it('shows book content from Walk 10', () => {
+  it('shows book content from Walk 10 stop 1', () => {
     renderWalkPage('10');
+    // Stop 1 is now the UW/Metro start with reversed directions
+    expect(screen.getByText(/Burke-Gilman Trail/i)).toBeInTheDocument();
+  });
+
+  it('General Land Office content is present at stop 15', async () => {
+    renderWalkPage('10');
+    // Navigate to stop 15 (Green Lake Shore — now the final stop)
+    for (let i = 0; i < 14; i++) {
+      fireEvent.click(screen.getByLabelText(/Next stop/i));
+      // eslint-disable-next-line no-await-in-loop
+      await waitFor(() => {});
+    }
     expect(screen.getByText(/General Land Office/i)).toBeInTheDocument();
   });
 
@@ -130,12 +150,31 @@ describe('WalkPage', () => {
   it('Full Route button opens Google Maps URL', () => {
     const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
     renderWalkPage('10');
-    // Two "Open full route" buttons exist: header + bottom nav. Click the first.
+    // With 15 stops the route is split; grab any "Open full route" button
     fireEvent.click(screen.getAllByLabelText(/Open full route/i)[0]);
     expect(openSpy).toHaveBeenCalledTimes(1);
     const [url] = openSpy.mock.calls[0] as [string];
     expect(url).toContain('google.com/maps');
     expect(url).toContain('travelmode=walking');
+    openSpy.mockRestore();
+  });
+
+  it('split route has at most 10 waypoints per URL', () => {
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    renderWalkPage('10');
+    const buttons = screen.getAllByLabelText(/Open full route part \d+ in Google Maps/i);
+    buttons.forEach(btn => {
+      fireEvent.click(btn);
+    });
+    openSpy.mock.calls.forEach(([url]) => {
+      const u = url as string;
+      // Count encoded waypoints: each waypoint is separated by %7C (|)
+      const wayptsMatch = u.match(/waypoints=([^&]*)/);
+      if (wayptsMatch) {
+        const count = wayptsMatch[1].split('%7C').length;
+        expect(count).toBeLessThanOrEqual(8); // Google Maps max intermediate waypoints
+      }
+    });
     openSpy.mockRestore();
   });
 

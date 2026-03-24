@@ -13,16 +13,32 @@ const MiniMap = lazy(() => import('../components/MiniMap'));
 const WALKS: Record<number, Walk> = { 10: walk10 };
 
 // ── Helpers ────────────────────────────────────────────
-function buildGoogleMapsUrl(waypoints: Waypoint[]): string {
-  // Google Maps multi-waypoint walking URL
+
+/**
+ * Google Maps Directions API allows max 8 intermediate waypoints (10 total).
+ * For longer walks we split into overlapping chunks, each ≤ 10 points.
+ * Returns an array of URLs (usually 1; 2+ for walks with >10 stops).
+ */
+const MAX_GMAPS_INTERMEDIATE = 8;
+
+function buildGoogleMapsUrls(waypoints: Waypoint[]): string[] {
   const coords = waypoints.map(wp => `${wp.coords.lat},${wp.coords.lng}`);
-  const origin      = coords[0];
-  const destination = coords[coords.length - 1];
-  const middle      = coords.slice(1, -1);
-  const wayptsParam = middle.length
-    ? `&waypoints=${middle.map(c => encodeURIComponent(c)).join('|')}`
-    : '';
-  return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${wayptsParam}&travelmode=walking`;
+  const urls: string[] = [];
+  const step = MAX_GMAPS_INTERMEDIATE + 1; // advance 9 per chunk; endpoints overlap
+
+  for (let i = 0; i < coords.length - 1; i += step) {
+    const chunk = coords.slice(i, i + step + 1); // up to 10 points
+    const origin      = chunk[0];
+    const destination = chunk[chunk.length - 1];
+    const middle      = chunk.slice(1, -1);
+    const wayptsParam = middle.length
+      ? `&waypoints=${middle.map(c => encodeURIComponent(c)).join('|')}`
+      : '';
+    urls.push(
+      `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${wayptsParam}&travelmode=walking`,
+    );
+  }
+  return urls;
 }
 
 function buildNavUrl(waypoint: Waypoint): string {
@@ -136,6 +152,7 @@ export default function WalkPage() {
   const waypoint = walk.waypoints[activeId - 1];
   const completedStops = progress?.completedStops ?? [];
   const progressPct = Math.round((completedStops.length / walk.totalStops) * 100);
+  const routeUrls = buildGoogleMapsUrls(walk.waypoints);
 
   // ── Navigation ─────────────────────────────────────────
   const goTo = useCallback((newId: number) => {
@@ -159,8 +176,7 @@ export default function WalkPage() {
     else play(waypoint.content);
   };
 
-  // ── Maps URLs ──────────────────────────────────────────
-  const openFullRoute = () => window.open(buildGoogleMapsUrl(walk.waypoints), '_blank');
+  // ── Maps ───────────────────────────────────────────────
   const openNavToStop = () => window.open(buildNavUrl(waypoint), '_blank');
 
   return (
@@ -171,11 +187,36 @@ export default function WalkPage() {
           <button className="walk-back-btn" onClick={() => { stop(); navigate('/'); }} aria-label="Back to walks">
             ‹ All Walks
           </button>
-          <button className="walk-maps-btn btn btn-blue" onClick={openFullRoute} aria-label="Open full route in Google Maps">
-            🗺️ Full Route
-          </button>
+
+          {/* Full Route — split into 2 buttons when >10 stops */}
+          {routeUrls.length === 1 ? (
+            <button
+              className="walk-maps-btn btn btn-blue"
+              onClick={() => window.open(routeUrls[0], '_blank')}
+              aria-label="Open full route in Google Maps"
+            >
+              🗺️ Full Route
+            </button>
+          ) : (
+            <div className="walk-route-split">
+              {routeUrls.map((url, i) => (
+                <button
+                  key={i}
+                  className="walk-maps-btn btn btn-blue"
+                  onClick={() => window.open(url, '_blank')}
+                  aria-label={`Open full route part ${i + 1} in Google Maps`}
+                >
+                  🗺️ {i + 1}/{routeUrls.length}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
+
         <h2 className="walk-title">{walk.title}</h2>
+        {walk.reversed && (
+          <div className="walk-reversed-badge">⭐ Reversed Route</div>
+        )}
         <p className="walk-meta">Walk {walk.id} · {walk.distance} · {walk.totalStops} stops</p>
         <div className="progress-track" style={{ marginTop: 10 }}>
           <div
@@ -251,9 +292,9 @@ export default function WalkPage() {
         </button>
         <button
           className="walk-route-btn"
-          onClick={openFullRoute}
+          onClick={() => window.open(routeUrls[0], '_blank')}
           aria-label="Open full route in Google Maps"
-          title="Open full route in Google Maps"
+          title={routeUrls.length > 1 ? `Full route (part 1 of ${routeUrls.length})` : 'Open full route in Google Maps'}
         >
           🗺️
         </button>

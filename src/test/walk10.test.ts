@@ -34,11 +34,15 @@ describe('walk10 data', () => {
     });
   });
 
-  it('first waypoint is Green Lake', () => {
-    expect(walk10.waypoints[0].title).toContain('Green Lake');
+  it('walk is marked as reversed', () => {
+    expect(walk10.reversed).toBe(true);
   });
 
-  it('last waypoint is the bus stop', () => {
-    expect(walk10.waypoints[14].title).toContain('Metro');
+  it('first waypoint is the UW bus stop (reversed start)', () => {
+    expect(walk10.waypoints[0].title).toContain('Metro');
+  });
+
+  it('last waypoint is Green Lake (reversed end)', () => {
+    expect(walk10.waypoints[14].title).toContain('Green Lake');
   });
 });
