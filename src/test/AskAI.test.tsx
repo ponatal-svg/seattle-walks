@@ -98,6 +98,33 @@ describe('AskAI', () => {
     }, { timeout: 5000 });
   });
 
+  it('request body contains sufficient maxOutputTokens (≥512)', async () => {
+    const user = userEvent.setup();
+    mockGeminiSuccess('Answer');
+    render(<AskAI {...defaultProps} />);
+    await user.type(screen.getByPlaceholderText(/Ask anything/i), 'test question');
+    await user.click(screen.getByLabelText(/Send question/i));
+    await waitFor(() => expect(mockFetch).toHaveBeenCalledTimes(1));
+
+    const [, options] = mockFetch.mock.calls[0] as [string, RequestInit];
+    const body = JSON.parse(options.body as string);
+    expect(body.generationConfig.maxOutputTokens).toBeGreaterThanOrEqual(512);
+  });
+
+  it('request body contains the user question', async () => {
+    const user = userEvent.setup();
+    mockGeminiSuccess('Answer');
+    render(<AskAI {...defaultProps} />);
+    await user.type(screen.getByPlaceholderText(/Ask anything/i), 'unique question xyz');
+    await user.click(screen.getByLabelText(/Send question/i));
+    await waitFor(() => expect(mockFetch).toHaveBeenCalledTimes(1));
+
+    const [, options] = mockFetch.mock.calls[0] as [string, RequestInit];
+    const body = JSON.parse(options.body as string);
+    const text: string = body.contents[0].parts[0].text;
+    expect(text).toContain('unique question xyz');
+  });
+
   it('clicking a suggestion chip sends that question', async () => {
     mockGeminiSuccess('Great answer');
     render(<AskAI {...defaultProps} />);
