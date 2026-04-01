@@ -14,7 +14,7 @@ export const walk12: Walk = {
       id: 1,
       title: 'Louisa Boren Park',
       location: '15th Ave E & E Garfield St',
-      coords: { lat: 47.6343, lng: -122.3125 },
+      coords: { lat: 47.6354, lng: -122.3115 },
       content: `With its great views out to Lake Washington, Union Bay, and the Cascade Mountains, Louisa Boren Park is a hidden little treasure on Capitol Hill. It is also home to several historic trees, English oaks that grow along the drop-off on the eastern edge of the park, across the path from Lee Kelly's large, unnamed sculpture. Seattle Parks Department historian Don Sherwood wrote that the trees were originally planted at Denny Park and were moved here in 1930 when Denny Park was lowered during the final regrade of Denny Hill. No other trees that grew at Denny before the regrade are known to exist.
 
 This small park honors one of Seattle's earliest citizens. Born in Illinois in 1827, Louisa Boren arrived here on November 13, 1851, as part of the Denny Party, the group of settlers who are considered the founders of Seattle. She was single at the time but soon married David Denny in the first settler wedding in the city. Because she had carried sweetbriar rose seeds from her home, she was known as the Sweetbriar Bride. Louisa's other claim to fame is that she was the last survivor of the Denny Party (she died in August 1916).`,
@@ -30,7 +30,7 @@ This small park honors one of Seattle's earliest citizens. Born in Illinois in 1
       id: 3,
       title: 'Office of the Bishop · Episcopal Diocese',
       location: '1551 10th Ave E',
-      coords: { lat: 47.6335, lng: -122.3212 },
+      coords: { lat: 47.6335, lng: -122.3205 },
       content: `This grand building was originally the home of John and Eliza Leary. Leary arrived in Seattle in 1869 and soon became involved in numerous development projects including coal mines in Renton, a water supply company in Seattle, and ownership of the Seattle Post (which eventually became the Seattle Post-Intelligencer, a long-time Seattle newspaper). He was also Seattle's mayor from 1884 to 1885 as a member of the Business Men's Ticket party. He married Eliza Ferry, daughter of Washington state's first governor, Elisha Ferry, in 1891.
 
 In 1903, Leary hired Alfred Bodley to design a house for him and his wife. Unfortunately, he died before the house was finished. Eliza, who was well known for hosting many events at the house, lived there until her death in 1935. The lovely sandstone used in the construction of the house came from Tenino, Washington, one of three areas that supplied most of the local stone used in building projects across the region. It is a 50-million-year-old sandstone, deposited when what we now think of as the I-5 corridor was oceanfront property and the Olympic Mountains did not exist.
@@ -45,7 +45,7 @@ One additional detail of note: 10th Avenue curves slightly around the former Lea
       id: 4,
       title: 'Sam Hill Mansion',
       location: '814 E Highland Drive',
-      coords: { lat: 47.6318, lng: -122.3200 },
+      coords: { lat: 47.6307, lng: -122.3215 },
       content: `Samuel Hill was a lawyer and railroad executive who worked primarily for and with his father-in-law, James J. Hill (the "empire builder" mentioned in Walk 7). The younger Hill moved to Seattle in 1901 and soon became involved in a variety of investments. He is probably best known for building his Maryhill Mansion and Stonehenge Memorial (in southern Washington on the Columbia River, 10 miles south of Goldendale). Hill began work on his Capitol Hill home in 1908. According to a Seattle Times article, he built it in part to host Crown Prince Albert Leopold of Belgium, whom Hill had invited to Seattle for the Alaska-Yukon-Pacific Exposition. Unfortunately for Hill, politics kept Leopold from visiting Seattle.
 
 Made of concrete, the walls are 10 feet thick at the base and reinforced with massive steel rails. On top of the house was a rooftop garden where guests could eat dinner in a park-like setting. Other novel features included a telephone in each room, a gas-powered heating plant, and a single switch in the primary bedroom that could turn on all the lights in the house. Note the small sundial on the southeastern corner of the house (above a gate). The quote on the dial is from Rowland Hazard, a woolen manufacturer and friend of Hill's from Rhode Island, who had a sundial on his house.`,
@@ -75,7 +75,7 @@ Made of concrete, the walls are 10 feet thick at the base and reinforced with ma
       id: 8,
       title: 'Cornish College · Kerry Hall',
       location: 'Boylston Ave E & E Roy St',
-      coords: { lat: 47.6257, lng: -122.3225 },
+      coords: { lat: 47.6253, lng: -122.3231 },
       content: `In 1914 Nellie Cornish started the Cornish College of the Arts, where she taught piano to children in a single room. When she outgrew that space (at the corner of Broadway and Pine Street), she moved her school to this location in 1921, where she had the present building designed to her specifications. The new school building's appearance was described in the Town Crier as having "both the restraint and freedom of [the] Venetian, the Spanish, the Levant, and even of Tibet." At the top of the building are names of famous artists: Anna Pavlova, Russian ballerina; John Millington Synge, Irish playwright and poet; Wilhelm Richard Wagner, German composer; William Morris, British designer; and James Abbott McNeill Whistler, American painter. Miss Aunt Nellie, as she was known to people at the school, hoped such luminaries would inspire her students. The bas-relief panels near the building's cornice were modeled on students at the school. Today this building, known as Kerry Hall, houses the Cornish College dance and music department, and the school's main campus is near Westlake Avenue and Denny Way.`,
     },
     {
@@ -123,7 +123,7 @@ One block north on the east side of 14th is another remnant of the city's early 
       id: 14,
       title: 'Volunteer Park',
       location: '1247 15th Ave E',
-      coords: { lat: 47.6299, lng: -122.3147 },
+      coords: { lat: 47.6290, lng: -122.3146 },
       content: `Like many who achieve success late in life, Volunteer Park began rather humbly as 40 acres purchased by the city for a cemetery in 1876. It was named Washelli, a Makah word meaning "west wind." In 1887, the City Council decided that the land would better serve as space for the living. It had all the graves removed and the former cemetery was renamed Lake View Park. That name didn't last either; it became City Park and finally Volunteer, in 1901, the same year the reservoir was built.
 
 Eight years later, park designer John Charles Olmsted wrote that as Volunteer "will be surrounded by a highly finished style of city development, it will be best to adopt a neat and smooth style of gardening throughout." The implementation of Olmsted's plans finally led to the park becoming one of the city's most popular public spaces.
@@ -134,7 +134,7 @@ In front of you is the brick water tower (built in 1906), or stand pipe, whose i
       id: 15,
       title: 'Seattle Asian Art Museum',
       location: 'Volunteer Park, 1400 E Prospect St',
-      coords: { lat: 47.6305, lng: -122.3142 },
+      coords: { lat: 47.6303, lng: -122.3141 },
       content: `On the right is the original Seattle Art Museum, which opened in 1933 with money provided by Margaret MacTavish Fuller and her son Richard, who directed the museum for 40 years. It now houses the Seattle Asian Art Museum. Architectural historians consider it a very progressive design for its time because it broke away from the traditional neoclassical style that then prevailed in the design of most American museums. The building's sandstone came from the Wilkeson quarry near Mount Rainier. It is another of the three principal suppliers of sandstone in western Washington. Chuckanut, near Bellingham, is the third.
 
 North of the museum is the Volunteer Park Conservatory, which opened in 1912. The city purchased it as a kit from Hitchings & Company in New York and assembled the metal frame with its 3,426 glass panes on site. The design is based on London's Crystal Palace. Housed in the conservatory is an enticing collection of cacti, orchids, bromeliads, and palms that is ever-changing and always delightful. In recent years, restoration has focused on returning the building to its historic appearance.`,
@@ -143,7 +143,7 @@ North of the museum is the Volunteer Park Conservatory, which opened in 1912. Th
       id: 16,
       title: 'Streetcar Slabs · Lake View Cemetery',
       location: '15th Ave E, north of Volunteer Park exit',
-      coords: { lat: 47.6325, lng: -122.3127 },
+      coords: { lat: 47.6321, lng: -122.3157 },
       content: `Note the concrete blocks of the retaining wall. Each block has one or two holes. In the former streetcar system that ran down 15th, the trolley's steel rails sat atop and were attached to the slabs. The Capitol Hill line opened in November 1901. As was true of other early Seattle trolley routes, a big impetus for this route's construction was to promote the sale of adjacent real estate. Within a few years, other lines opened on the hill. Not coincidentally, most of the modern bus routes that traverse Capitol Hill, including those that run along Summit, Broadway, 15th, 19th, and 24th, follow the historic trolley routes. By 1941, all of the streetcars on Capitol Hill and throughout the city had been replaced by buses.
 
 Lake View Cemetery across the street to the west is one of the oldest in the city and one of the most diverse with its graves of city settlers such as Arthur Denny, Henry Yesler, and Doc Maynard; Chief Seattle's daughter Kikisebloo (aka Princess Angeline); Bruce Lee and his son Brandon; a horse named Buck; and Madam Damnable, who ran an early brothel and earned her name for her proclivity for profanity.`,
