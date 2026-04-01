@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { walk10 } from '../data/walk10';
+import { walk12 } from '../data/walk12';
 import { useProgress } from '../hooks/useProgress';
 import AskAI from '../components/AskAI';
 import type { Walk, Waypoint } from '../types';
@@ -10,7 +11,7 @@ import './WalkPage.css';
 const MiniMap = lazy(() => import('../components/MiniMap'));
 
 // Registry of available walks — extend as you add more
-const WALKS: Record<number, Walk> = { 10: walk10 };
+const WALKS: Record<number, Walk> = { 10: walk10, 12: walk12 };
 
 // ── Helpers ────────────────────────────────────────────
 
