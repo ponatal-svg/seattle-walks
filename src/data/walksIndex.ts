@@ -1,5 +1,8 @@
 import type { WalkMeta } from '../types';
 
+/** Walk IDs that have full content available in this release */
+export const AVAILABLE_WALK_IDS = new Set([1, 3, 4, 10, 12, 15, 18]);
+
 export const walksIndex: WalkMeta[] = [
   { id: 1,  title: "Seattle's Historic Shoreline", subtitle: "Remnants from the Past",                     distance: "1.7 mi", difficulty: "easy",      startPoint: "Alaskan Way at Bell St",             endPoint: "Occidental Park",               totalStops: 13 },
   { id: 2,  title: "Denny Hill",                   subtitle: "The Big Hill That Went Away",               distance: "1.9 mi", difficulty: "moderate",  startPoint: "2nd Ave & Pine St",                  endPoint: "2nd Ave & Pine St",             totalStops: 12 },

@@ -11,6 +11,14 @@
   position: absolute; right: -8px; bottom: -16px;
   font-size: 100px; opacity: 0.1; pointer-events: none;
 }
+.dest-back-btn {
+  background: none; border: none; cursor: pointer;
+  color: rgba(255,255,255,0.6); font-size: 13px; font-weight: 600;
+  letter-spacing: 0.3px; font-family: var(--font);
+  padding: 0 0 10px; transition: color 0.15s; display: block;
+}
+.dest-back-btn:hover { color: rgba(255,255,255,0.9); }
+
 .home-header-eyebrow {
   font-size: 11px; font-weight: 700;
   text-transform: uppercase; letter-spacing: 1.2px;
@@ -69,6 +77,27 @@
   align-items: flex-end; gap: 4px; flex-shrink: 0;
 }
 .walk-card-chevron { color: #d1d5db; font-size: 20px; }
+
+/* ── Destination card ─────────────────────────────────── */
+.dest-card {
+  width: 100%;
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px;
+  background: none; border: none; cursor: pointer;
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.15s;
+  font-family: var(--font);
+}
+.dest-card:hover  { background: #f9f9f9; }
+.dest-card:active { background: #f0f0f0; }
+
+.dest-card-flag { font-size: 36px; line-height: 1; flex-shrink: 0; }
+.dest-card-body { flex: 1; min-width: 0; }
+.dest-card-name { font-size: 18px; font-weight: 800; color: var(--text); }
+.dest-card-desc { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+.dest-card-chips { display: flex; gap: 6px; margin-top: 7px; flex-wrap: wrap; }
+.dest-card-chevron { color: #d1d5db; font-size: 24px; flex-shrink: 0; }
 
 /* ── Progress ring ─────────────────────────────────────── */
 .progress-ring { position: relative; width: 36px; height: 36px; }

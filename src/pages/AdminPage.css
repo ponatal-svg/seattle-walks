@@ -1,0 +1,88 @@
+.admin-page { background: var(--sand); }
+
+.admin-header {
+  background: linear-gradient(160deg, #1c1f2e 0%, #2d3148 100%);
+  padding: 16px 18px 20px;
+  flex-shrink: 0;
+}
+.admin-back-btn {
+  background: none; border: none; cursor: pointer;
+  color: rgba(255,255,255,0.6); font-size: 13px; font-weight: 600;
+  font-family: var(--font); padding: 0 0 10px; display: block;
+  transition: color 0.15s;
+}
+.admin-back-btn:hover { color: rgba(255,255,255,0.9); }
+.admin-title {
+  color: white; font-size: 24px; font-weight: 900;
+  letter-spacing: -0.3px;
+}
+.admin-sub { color: rgba(255,255,255,0.5); font-size: 13px; margin-top: 3px; }
+
+.admin-body { padding: 12px 0; }
+
+/* ── Destination section ───────────────────────────── */
+.admin-section {
+  background: white;
+  border-radius: var(--radius);
+  margin: 0 14px 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+
+.admin-dest-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+.admin-dest-info { display: flex; flex-direction: column; gap: 2px; }
+.admin-dest-name { font-size: 16px; font-weight: 800; color: var(--text); }
+.admin-dest-count { font-size: 12px; color: var(--text-muted); }
+
+/* ── Walk rows ─────────────────────────────────────── */
+.admin-walks-list { }
+.admin-walk-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid #f8f8f8;
+}
+.admin-walk-row:last-child { border-bottom: none; }
+.admin-walk-info { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
+.admin-walk-title {
+  font-size: 14px; font-weight: 600; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.admin-walk-meta { display: flex; gap: 5px; flex-wrap: wrap; }
+
+/* ── Toggle switch ─────────────────────────────────── */
+.admin-toggle {
+  position: relative; display: inline-block;
+  width: 44px; height: 24px; flex-shrink: 0; margin-left: 12px;
+}
+.admin-toggle--sm {
+  width: 36px; height: 20px;
+}
+.admin-toggle input { opacity: 0; width: 0; height: 0; }
+
+.admin-toggle-slider {
+  position: absolute; inset: 0;
+  background: #d1d5db; border-radius: 24px;
+  cursor: pointer; transition: background 0.2s;
+}
+.admin-toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  left: 3px; top: 3px;
+  background: white; border-radius: 50%;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.admin-toggle--sm .admin-toggle-slider::before {
+  width: 14px; height: 14px;
+  left: 3px; top: 3px;
+}
+
+.admin-toggle input:checked + .admin-toggle-slider { background: #2d6a4f; }
+.admin-toggle input:checked + .admin-toggle-slider::before { transform: translateX(20px); }
+.admin-toggle--sm input:checked + .admin-toggle-slider::before { transform: translateX(16px); }

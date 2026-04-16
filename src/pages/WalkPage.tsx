@@ -1,7 +1,14 @@
 import { useState, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { walk1 } from '../data/walk1';
+import { walk3 } from '../data/walk3';
+import { walk4 } from '../data/walk4';
 import { walk10 } from '../data/walk10';
 import { walk12 } from '../data/walk12';
+import { walk15 } from '../data/walk15';
+import { walk18 } from '../data/walk18';
+import { walk as sfWalk1 } from '../data/santaFe/walk1';
+import { destinationWalks } from '../data/destinations';
 import { useProgress } from '../hooks/useProgress';
 import AskAI from '../components/AskAI';
 import type { Walk, Waypoint } from '../types';
@@ -10,8 +17,11 @@ import './WalkPage.css';
 // Lazy-load heavy map component so the page renders immediately
 const MiniMap = lazy(() => import('../components/MiniMap'));
 
-// Registry of available walks — extend as you add more
-const WALKS: Record<number, Walk> = { 10: walk10, 12: walk12 };
+// Registry of available walks per destination
+const WALKS: Record<string, Record<number, Walk>> = {
+  'seattle': { 1: walk1, 3: walk3, 4: walk4, 10: walk10, 12: walk12, 15: walk15, 18: walk18 },
+  'santa-fe': { 1: sfWalk1 },
+};
 
 // ── Helpers ────────────────────────────────────────────
 
@@ -25,10 +35,10 @@ const MAX_GMAPS_INTERMEDIATE = 8;
 function buildGoogleMapsUrls(waypoints: Waypoint[]): string[] {
   const coords = waypoints.map(wp => `${wp.coords.lat},${wp.coords.lng}`);
   const urls: string[] = [];
-  const step = MAX_GMAPS_INTERMEDIATE + 1; // advance 9 per chunk; endpoints overlap
+  const step = MAX_GMAPS_INTERMEDIATE + 1;
 
   for (let i = 0; i < coords.length - 1; i += step) {
-    const chunk = coords.slice(i, i + step + 1); // up to 10 points
+    const chunk = coords.slice(i, i + step + 1);
     const origin      = chunk[0];
     const destination = chunk[chunk.length - 1];
     const middle      = chunk.slice(1, -1);
@@ -59,7 +69,7 @@ function useAudio() {
 
   const play = useCallback((text: string) => {
     stop();
-    if (!window.speechSynthesis) return; // API not available
+    if (!window.speechSynthesis) return;
     const utt = new SpeechSynthesisUtterance(text.replace(/\n+/g, ' '));
     utt.rate  = 0.95;
     utt.pitch = 1;
@@ -70,7 +80,6 @@ function useAudio() {
     setPlaying(true);
   }, [stop]);
 
-  // Stop speech on unmount
   useEffect(() => () => { window.speechSynthesis.cancel(); }, []);
 
   return { playing, play, stop };
@@ -125,90 +134,115 @@ function AudioBar({ playing, onToggle }: { playing: boolean; onToggle: () => voi
 
 // ── Main component ─────────────────────────────────────
 export default function WalkPage() {
-  const { id } = useParams<{ id: string }>();
+  const { destination = 'seattle', id } = useParams<{ destination: string; id: string }>();
   const navigate = useNavigate();
   const walkId = Number(id);
-  const walk = WALKS[walkId];
+  const walk = WALKS[destination]?.[walkId];
+  const hasMultipleWalks = (destinationWalks[destination]?.length ?? 0) > 1;
 
   const { getProgress, markStopComplete, setCurrentStop } = useProgress();
-  const progress = getProgress(walkId);
-  const initialStop = progress?.currentStop ?? 1;
+  const progress = getProgress(destination, walkId);
+  const hasIntro = !!(walk?.introduction || walk?.mapImage);
+  const initialStop = progress?.currentStop ?? (hasIntro ? 0 : 1);
   const [activeId, setActiveId] = useState(initialStop);
+  const [mapFullscreen, setMapFullscreen] = useState(false);
   const { playing, play, stop } = useAudio();
 
   // ── Guard: unknown walk ────────────────────────────────
   if (!walk) {
+    const walksForDest = destinationWalks[destination] ?? [];
+    const meta = walksForDest.find(w => w.id === walkId);
     return (
       <div className="app-shell walk-page">
-        <div className="error-banner">
-          ⚠️ Walk #{walkId} not found. Only Walk 10 is available in this release.
-          <button className="btn btn-secondary" style={{ marginTop: 8 }} onClick={() => navigate('/')}>
-            ← Back to walks
-          </button>
+        <header className="walk-header">
+          <div className="walk-header-top">
+            {hasMultipleWalks && (
+              <button className="walk-back-btn" onClick={() => navigate(`/${destination}`)} aria-label="Back to walks">
+                ‹ All Walks
+              </button>
+            )}
+          </div>
+          {meta && <h2 className="walk-title">{meta.title}</h2>}
+          {meta && <p className="walk-meta">Walk {meta.id} · {meta.distance} · {meta.totalStops} stops</p>}
+        </header>
+        <div className="scroll-area walk-body">
+          <div className="card intro-text-card" style={{ textAlign: 'center', padding: '2rem 1.5rem' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '0.75rem' }}>🚧</div>
+            <div style={{ fontWeight: 700, fontSize: '1.2rem', marginBottom: '0.5rem' }}>Coming Soon</div>
+            <div style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
+              This walk hasn't been added yet. Check back for updates!
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
-  const waypoint = walk.waypoints[activeId - 1];
+  const isIntroPage = activeId === 0;
+  const waypoint = isIntroPage ? null : walk.waypoints[activeId - 1];
   const completedStops = progress?.completedStops ?? [];
   const progressPct = Math.round((completedStops.length / walk.totalStops) * 100);
-  const routeUrls = buildGoogleMapsUrls(walk.waypoints);
+  const routeUrls = walk.mapUrls ?? buildGoogleMapsUrls(walk.waypoints);
 
   // ── Navigation ─────────────────────────────────────────
   const goTo = useCallback((newId: number) => {
     stop();
     setActiveId(newId);
-    setCurrentStop(walkId, newId);
-  }, [stop, walkId, setCurrentStop]);
+    setCurrentStop(destination, walkId, newId);
+  }, [stop, destination, walkId, setCurrentStop]);
 
   const handleNext = () => {
-    markStopComplete(walkId, activeId, walk.totalStops);
+    if (isIntroPage) { goTo(1); return; }
+    markStopComplete(destination, walkId, activeId, walk.totalStops);
     if (activeId < walk.totalStops) goTo(activeId + 1);
   };
 
   const handlePrev = () => {
+    if (activeId === 1 && hasIntro) { goTo(0); return; }
     if (activeId > 1) goTo(activeId - 1);
   };
 
   // ── Audio ──────────────────────────────────────────────
   const toggleAudio = () => {
+    if (!waypoint) return;
     if (playing) stop();
     else play(waypoint.content);
   };
-
-  // ── Maps ───────────────────────────────────────────────
-  const openNavToStop = () => window.open(buildNavUrl(waypoint), '_blank');
 
   return (
     <div className="app-shell walk-page">
       {/* ── Header ─────────────────────────────────────── */}
       <header className="walk-header">
         <div className="walk-header-top">
-          <button className="walk-back-btn" onClick={() => { stop(); navigate('/'); }} aria-label="Back to walks">
-            ‹ All Walks
-          </button>
+          {hasMultipleWalks && (
+            <button className="walk-back-btn" onClick={() => { stop(); navigate(`/${destination}`); }} aria-label="Back to walks">
+              ‹ All Walks
+            </button>
+          )}
 
-          {/* Full Route — split into 2 buttons when >10 stops */}
           {routeUrls.length === 1 ? (
-            <button
+            <a
               className="walk-maps-btn btn btn-blue"
-              onClick={() => window.open(routeUrls[0], '_blank')}
+              href={routeUrls[0]}
+              target="_blank"
+              rel="noopener noreferrer"
               aria-label="Open full route in Google Maps"
             >
               🗺️ Full Route
-            </button>
+            </a>
           ) : (
             <div className="walk-route-split">
               {routeUrls.map((url, i) => (
-                <button
+                <a
                   key={i}
                   className="walk-maps-btn btn btn-blue"
-                  onClick={() => window.open(url, '_blank')}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={`Open full route part ${i + 1} in Google Maps`}
                 >
                   🗺️ {i + 1}/{routeUrls.length}
-                </button>
+                </a>
               ))}
             </div>
           )}
@@ -236,75 +270,126 @@ export default function WalkPage() {
         </div>
       </header>
 
-      {/* ── Mini Map ─────────────────────────────────────── */}
-      <Suspense fallback={
-        <div className="mini-map-placeholder">
-          <div className="loading-spinner" />
+      {/* ── Map or stop photo ────────────────────────────── */}
+      {!isIntroPage && waypoint?.image ? (
+        <div className="stop-hero-wrap">
+          <img
+            src={waypoint.image}
+            alt={waypoint.title}
+            className="stop-hero-img"
+          />
         </div>
-      }>
-        <MiniMap waypoints={walk.waypoints} activeId={activeId} />
-      </Suspense>
+      ) : !walk.waypoints.every(wp => wp.image) ? (
+        <Suspense fallback={
+          <div className="mini-map-placeholder">
+            <div className="loading-spinner" />
+          </div>
+        }>
+          <MiniMap waypoints={walk.waypoints} activeId={activeId} />
+        </Suspense>
+      ) : null}
+
+      {/* ── Fullscreen map overlay ───────────────────────── */}
+      {mapFullscreen && walk.mapImage && (
+        <div className="map-fullscreen-overlay" onClick={() => setMapFullscreen(false)}>
+          <button className="map-fullscreen-close" aria-label="Close fullscreen map">✕</button>
+          <img src={walk.mapImage} alt={`Route map for ${walk.title}`} className="map-fullscreen-img" />
+        </div>
+      )}
 
       {/* ── Scrollable Content ──────────────────────────── */}
       <div className="scroll-area walk-body" key={activeId}>
-        <div className="walk-stop-header fade-in">
-          <div className="walk-stop-num">{activeId}</div>
-          <div>
-            <h3 className="walk-stop-title">{waypoint.title}</h3>
-            <p className="walk-stop-location">📍 {waypoint.location}</p>
+
+        {/* ── Intro page (page 0) ── */}
+        {isIntroPage ? (
+          <div className="intro-page fade-in">
+            {walk.mapImage && (
+              <div className="intro-map-wrap" onClick={() => setMapFullscreen(true)} role="button" aria-label="Tap to view full map">
+                <img src={walk.mapImage} alt={`Route map for ${walk.title}`} className="intro-map-img" />
+                <div className="intro-map-hint">Tap to expand</div>
+              </div>
+            )}
+            {walk.introduction && (
+              <div className="card intro-text-card">
+                {walk.introduction.split('\n\n').map((para, i) => (
+                  <p key={i}>{para}</p>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
+        ) : (
+          <>
+            <div className="walk-stop-header fade-in">
+              <div className="walk-stop-num">{activeId}</div>
+              <div>
+                <h3 className="walk-stop-title">{waypoint!.title}</h3>
+                <p className="walk-stop-location">📍 {waypoint!.location}</p>
+              </div>
+            </div>
 
-        {/* Navigate to this stop */}
-        <button className="nav-chip" onClick={openNavToStop} aria-label={`Navigate to stop ${activeId} in Google Maps`}>
-          <span>🧭</span>
-          <span>Navigate to Stop {activeId} in Google Maps</span>
-          <span className="nav-chip-arrow">↗</span>
-        </button>
+            {/* Navigate to this stop */}
+            <a
+              className="nav-chip"
+              href={buildNavUrl(waypoint!)}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Navigate to stop ${activeId} in Google Maps`}
+            >
+              <span>🧭</span>
+              <span>Navigate to Stop {activeId} in Google Maps</span>
+              <span className="nav-chip-arrow">↗</span>
+            </a>
 
-        {/* Book content */}
-        <div className="card content-card fade-in">
-          <div className="content-card-label">📖 From the Book</div>
-          <div className="content-body">
-            {waypoint.content.split('\n\n').map((para, i) => (
-              <p key={i}>{para}</p>
-            ))}
-          </div>
-        </div>
+            {/* Narrative content */}
+            <div className="card content-card fade-in">
+              <div className="content-body">
+                {waypoint!.content.split('\n\n').map((para, i) => (
+                  <p key={i}>{para}</p>
+                ))}
+              </div>
+            </div>
 
-        {/* Audio */}
-        <AudioBar playing={playing} onToggle={toggleAudio} />
+            {/* Audio */}
+            <AudioBar playing={playing} onToggle={toggleAudio} />
 
-        {/* Gemini Q&A */}
-        <AskAI waypoint={waypoint} walkTitle={walk.title} />
+            {/* Gemini Q&A */}
+            <AskAI waypoint={waypoint!} walkTitle={walk.title} />
 
-        <div style={{ height: 16 }} />
+            <div style={{ height: 16 }} />
+          </>
+        )}
       </div>
 
       {/* ── Bottom Nav ────────────────────────────────── */}
       <nav className="walk-bottom-nav" aria-label="Stop navigation">
-        <button
-          className="btn btn-secondary walk-nav-btn"
-          onClick={handlePrev}
-          disabled={activeId === 1}
-          aria-label="Previous stop"
-        >
-          ← Prev
-        </button>
-        <button
+        {!isIntroPage && !(activeId === 1 && !hasIntro) && (
+          <button
+            className="btn btn-secondary walk-nav-btn"
+            onClick={handlePrev}
+            aria-label="Previous stop"
+          >
+            ← Prev
+          </button>
+        )}
+        {(isIntroPage || (activeId === 1 && !hasIntro)) && (
+          <div className="walk-nav-btn" />
+        )}
+        <a
           className="walk-route-btn"
-          onClick={() => window.open(routeUrls[0], '_blank')}
+          href={routeUrls[0]}
+          target="_blank"
+          rel="noopener noreferrer"
           aria-label="Open full route in Google Maps"
           title={routeUrls.length > 1 ? `Full route (part 1 of ${routeUrls.length})` : 'Open full route in Google Maps'}
         >
           🗺️
-        </button>
+        </a>
         <button
-          className={`btn walk-nav-btn ${activeId === walk.totalStops ? 'btn-primary' : 'btn-primary'}`}
+          className="btn btn-primary walk-nav-btn"
           onClick={handleNext}
-          aria-label={activeId === walk.totalStops ? 'Finish walk' : 'Next stop'}
+          aria-label={isIntroPage ? 'Start walk' : activeId === walk.totalStops ? 'Finish walk' : 'Next stop'}
         >
-          {activeId === walk.totalStops ? '🎉 Finish' : 'Next →'}
+          {isIntroPage ? 'Start Walk →' : activeId === walk.totalStops ? '🎉 Finish' : 'Next →'}
         </button>
       </nav>
     </div>

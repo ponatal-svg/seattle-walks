@@ -9,6 +9,8 @@ export interface Waypoint {
   location: string;
   coords: Coords;
   content: string;
+  /** Optional photo shown at the top of the stop card (path relative to /public) */
+  image?: string;
 }
 
 export type Difficulty = 'easy' | 'moderate' | 'strenuous';
@@ -27,7 +29,20 @@ export interface WalkMeta {
 }
 
 export interface Walk extends WalkMeta {
+  introduction?: string;
+  mapImage?: string;
+  /** Pre-built Google Maps URLs (used instead of auto-generating from waypoints) */
+  mapUrls?: string[];
   waypoints: Waypoint[];
+}
+
+export interface Destination {
+  id: string;
+  name: string;
+  slug: string;
+  country: string;
+  description?: string;
+  published: boolean;
 }
 
 export interface WalkProgress {
